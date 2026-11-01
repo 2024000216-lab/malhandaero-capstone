@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "765375097931",
+    "project_id": "malhandaero-f1fe3",
+    "storage_bucket": "malhandaero-f1fe3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765375097931:android:b1a0ddcad4f7822793f1ce",
+        "android_client_info": {
+          "package_name": "com.dualcore.malhandaero.malhandaero"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJjonxDzxJ-f-NDLWUbtYCJypb72hayEo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
