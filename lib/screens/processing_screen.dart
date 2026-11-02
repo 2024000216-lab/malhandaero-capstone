@@ -33,14 +33,14 @@ class _ProcessingScreenState extends State<ProcessingScreen> {
       if (_cancelled || !mounted) return;
       setState(() => _step = 1);
 
-      final result = await AiService.extract(text);
+      final results = await AiService.extract(text);
       if (_cancelled || !mounted) return;
       setState(() => _step = 2);
 
       File(widget.audioPath).delete().ignore(); // 다 쓴 녹음 파일 삭제
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => ConfirmScreen(result: result)),
+        MaterialPageRoute(builder: (_) => ConfirmScreen(results: results)),
       );
     } on AiException catch (e) {
       if (_cancelled || !mounted) return;

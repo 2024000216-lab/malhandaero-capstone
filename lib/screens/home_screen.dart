@@ -309,6 +309,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 4),
                     Text(s.location ?? '장소 없음',
                         style: const TextStyle(fontSize: 16, color: AppColors.sub)),
+                    if (s.isRepeat) ...[
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.repeat_rounded, size: 18, color: AppColors.primary),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(Repeat.name(s.repeatRule!, s.date),
+                                style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.primary)),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

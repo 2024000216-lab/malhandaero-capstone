@@ -3,6 +3,7 @@ import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../models/schedule.dart';
+import '../utils/format.dart';
 
 /// 일정 알림 (기기 안에서 예약, 서버 필요 없음)
 class NotificationService {
@@ -42,7 +43,7 @@ class NotificationService {
 
     await _plugin.zonedSchedule(
       s.id!,
-      s.allDay ? '오늘 일정이 있어요' : '10분 뒤에 일정이 있어요',
+      s.allDay ? '오늘 일정이 있어요' : '${beforeLabel(s.alarmBefore!)} 뒤에 일정이 있어요',
       '${s.title} · ${s.timeLabel}${s.location != null ? ' · ${s.location}' : ''}',
       tz.TZDateTime.from(at, tz.local),
       _details,
@@ -52,4 +53,16 @@ class NotificationService {
   }
 
   static Future<void> cancel(int id) => _plugin.cancel(id);
+
+  static Future<void> scheduleAll(Iterable<Schedule> list) async {
+    for (final s in list) {
+      await schedule(s);
+    }
+  }
+
+  static Future<void> cancelAll(Iterable<int> ids) async {
+    for (final id in ids) {
+      await cancel(id);
+    }
+  }
 }

@@ -6,14 +6,17 @@ import '../services/notification_service.dart';
 import '../theme.dart';
 import '../utils/format.dart';
 import '../widgets/common.dart';
+import '../widgets/schedule_options.dart';
 import 'done_screen.dart';
 
 /// S-07 직접 입력 / 일정 고치기 (같은 양식)
-/// 위에서부터 1~5번 질문에 차례로 답하면 끝나도록 구성
+/// 위에서부터 1~6번 질문에 차례로 답하면 끝나도록 구성
+/// 고치기가 끝나면 상세 화면이 다시 보여줄 일정 id를 돌려준다.
 class EditScreen extends StatefulWidget {
   final Schedule? existing; // 있으면 "고치기"
   final DateTime? initialDate; // 홈에서 고른 날짜
-  const EditScreen({super.key, this.existing, this.initialDate});
+  final RepeatScope? scope; // 반복 일정을 고칠 때: 이 날만 / 이 날부터 모두
+  const EditScreen({super.key, this.existing, this.initialDate, this.scope});
 
   @override
   State<EditScreen> createState() => _EditScreenState();
@@ -29,12 +32,16 @@ class _EditScreenState extends State<EditScreen> {
 
   bool get _isEdit => widget.existing != null;
 
+  /// 반복 일정 중 이 날 하나만 고치는 경우 → 반복 질문을 보여주지 않는다
+  bool get _thisOnly => widget.scope == RepeatScope.thisOnly;
+
   @override
   void initState() {
     super.initState();
     final e = widget.existing;
     if (e != null) {
       _d = ScheduleDraft.fromSchedule(e);
+      if (_thisOnly) _d.clearRepeat();
     } else {
       _d = ScheduleDraft()
         ..date = widget.initialDate == null ? null : dateOnly(widget.initialDate!);
@@ -154,23 +161,43 @@ class _EditScreenState extends State<EditScreen> {
     if (_d.alarm) await NotificationService.requestPermission();
 
     if (_isEdit) {
-      final s = _d.toSchedule(id: widget.existing!.id);
-      await repo.update(s);
-      await NotificationService.schedule(s);
-      if (mounted) Navigator.pop(context);
+      final e = widget.existing!;
+      // 반복 일정을 "이 날부터 모두" 고치거나, 한 번짜리 일정을 반복으로 바꾸면
+      // 기존 것을 지우고 새로 만든다.
+      final remake = (e.isRepeat && !_thisOnly) || (!e.isRepeat && _d.repeatRule != null);
+      if (remake) {
+        if (e.isRepeat) {
+          final ids = await repo.deleteSeriesFrom(e.repeatGroup!, e.date);
+          await NotificationService.cancelAll(ids);
+        } else {
+          await repo.delete(e.id!);
+          await NotificationService.cancel(e.id!);
+        }
+        final series = await repo.insertSeries(_d.toSchedule());
+        await NotificationService.scheduleAll(series);
+        if (mounted) Navigator.pop(context, series.first.id);
+      } else {
+        // 한 번짜리 일정 고치기, 또는 반복 일정 중 이 날만 고치기(반복에서 빠짐)
+        final s = _d.toSchedule(id: e.id);
+        await repo.update(s);
+        await NotificationService.schedule(s);
+        if (mounted) Navigator.pop(context, s.id);
+      }
       return;
     }
 
-    final saved = await repo.insert(_d.toSchedule());
-    await NotificationService.schedule(saved);
+    final series = await repo.insertSeries(_d.toSchedule());
+    await NotificationService.scheduleAll(series);
     if (!mounted) return;
     final undo = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => DoneScreen(schedule: saved)),
+      MaterialPageRoute(builder: (_) => DoneScreen(schedule: series.first)),
     );
     if (undo == true) {
-      await repo.delete(saved.id!);
-      await NotificationService.cancel(saved.id!);
+      for (final s in series) {
+        await repo.delete(s.id!);
+      }
+      await NotificationService.cancelAll(series.map((s) => s.id!));
     }
     if (mounted) setState(() => _saving = false);
   }
@@ -193,7 +220,7 @@ class _EditScreenState extends State<EditScreen> {
                     child: TopTextButton(
                         label: '취소', onPressed: () => Navigator.pop(context)),
                   ),
-                  Text(_isEdit ? '일정 고치기' : '일정 직접 입력',
+                  Text(_isEdit ? (_thisOnly ? '이 날 일정만 고치기' : '일정 고치기') : '일정 직접 입력',
                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                 ],
               ),
@@ -228,12 +255,13 @@ class _EditScreenState extends State<EditScreen> {
                   const QuestionLabel('4. 어디서 하나요?', note: '(안 써도 돼요)'),
                   BigTextField(controller: _place, hint: '예) 동네 내과'),
                   const SizedBox(height: 22),
-                  QuestionLabel('5. 미리 알려드릴까요?',
-                      note: _d.alarm ? (_d.allDay ? '(당일 아침 9시)' : '(시작 10분 전)') : null),
-                  YesNo(
-                    value: _d.alarm,
-                    onChanged: (v) => setState(() => _d.alarm = v),
-                  ),
+                  const QuestionLabel('5. 미리 알려드릴까요?'),
+                  AlarmChoice(draft: _d, onChanged: () => setState(() {})),
+                  if (!_thisOnly) ...[
+                    const SizedBox(height: 22),
+                    const QuestionLabel('6. 반복되는 일정인가요?', note: '(예: 매주 병원)'),
+                    RepeatChoice(draft: _d, onChanged: () => setState(() {})),
+                  ],
                 ],
               ),
             ),

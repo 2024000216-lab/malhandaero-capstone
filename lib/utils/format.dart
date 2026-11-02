@@ -68,3 +68,7 @@ String needMessage(List<String> missing) {
   final joined = missing.join(', ');
   return '$joined${eulReul(missing.last)} 정해주세요';
 }
+
+/// 60 → 1시간, 30 → 30분
+String beforeLabel(int minutes) =>
+    minutes % 60 == 0 ? '${minutes ~/ 60}시간' : '$minutes분';

@@ -22,6 +22,9 @@ class ExtractResult {
   final int? endMin;
   final bool allDay;
   final String? location;
+  final String? repeatRule; // weekly / biweekly / monthly
+  final int? repeatMonths; // "한 달 동안" → 1
+  final DateTime? repeatUntil; // "12월 31일까지"
   final String? spanDate;
   final String? spanTime;
   final String? spanLocation;
@@ -35,6 +38,9 @@ class ExtractResult {
     this.endMin,
     this.allDay = false,
     this.location,
+    this.repeatRule,
+    this.repeatMonths,
+    this.repeatUntil,
     this.spanDate,
     this.spanTime,
     this.spanLocation,
@@ -71,8 +77,8 @@ class AiService {
     }
   }
 
-  /// 2단계: 텍스트 → 일정 정보
-  static Future<ExtractResult> extract(String transcript) async {
+  /// 2단계: 텍스트 → 일정 정보 (한 문장에 여러 개면 여러 개)
+  static Future<List<ExtractResult>> extract(String transcript) async {
     final now = DateTime.now();
     try {
       final res = await _callable('extractSchedule').call({
@@ -81,26 +87,41 @@ class AiService {
         'weekday': weekdayKo(now),
       });
       final data = Map<String, dynamic>.from(res.data as Map);
-      final spans = Map<String, dynamic>.from((data['spans'] as Map?) ?? {});
-      final dateStr = data['date'] as String?;
-      return ExtractResult(
-        transcript: transcript,
-        title: data['title'] as String?,
-        date: dateStr == null ? null : parseDateKey(dateStr),
-        startMin: parseHm(data['start_time'] as String?),
-        endMin: parseHm(data['end_time'] as String?),
-        allDay: data['all_day'] == true,
-        location: data['location'] as String?,
-        spanDate: spans['date'] as String?,
-        spanTime: spans['time'] as String?,
-        spanLocation: spans['location'] as String?,
-        spanTitle: spans['title'] as String?,
-      );
+      final list = (data['schedules'] as List?) ?? const [];
+      final results = list
+          .map((e) => _toResult(transcript, Map<String, dynamic>.from(e as Map)))
+          .toList();
+      if (results.isEmpty) throw AiException(FailReason.noSchedule);
+      return results;
+    } on AiException {
+      rethrow;
     } on FirebaseFunctionsException catch (e) {
       throw AiException(_reasonOf(e));
     } catch (_) {
       throw AiException(FailReason.network);
     }
+  }
+
+  static ExtractResult _toResult(String transcript, Map<String, dynamic> data) {
+    final spans = Map<String, dynamic>.from((data['spans'] as Map?) ?? {});
+    final dateStr = data['date'] as String?;
+    final untilStr = data['repeat_until'] as String?;
+    return ExtractResult(
+      transcript: transcript,
+      title: data['title'] as String?,
+      date: dateStr == null ? null : parseDateKey(dateStr),
+      startMin: parseHm(data['start_time'] as String?),
+      endMin: parseHm(data['end_time'] as String?),
+      allDay: data['all_day'] == true,
+      location: data['location'] as String?,
+      repeatRule: data['repeat'] as String?,
+      repeatMonths: (data['repeat_months'] as num?)?.toInt(),
+      repeatUntil: untilStr == null ? null : parseDateKey(untilStr),
+      spanDate: spans['date'] as String?,
+      spanTime: spans['time'] as String?,
+      spanLocation: spans['location'] as String?,
+      spanTitle: spans['title'] as String?,
+    );
   }
 
   /// 연결 테스트: (성공 여부, 안내 문구)

@@ -135,6 +135,25 @@ class _RecordScreenState extends State<RecordScreen> {
     if (p != null) File(p).delete().ignore();
   }
 
+  /// 빨간 "그만하기" 버튼 — 녹음을 멈추고 홈으로 돌아간다
+  Widget _stopButton() {
+    return SizedBox(
+      height: 52,
+      child: FilledButton.icon(
+        onPressed: _cancel,
+        icon: const Icon(Icons.close_rounded, size: 26),
+        label: const Text('그만하기'),
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.danger,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final remain = _maxSeconds - _elapsedMs ~/ 1000;
@@ -151,8 +170,8 @@ class _RecordScreenState extends State<RecordScreen> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 4, top: 4),
-                  child: TopTextButton(label: '그만하기', withArrow: true, onPressed: _cancel),
+                  padding: const EdgeInsets.only(left: 16, top: 10),
+                  child: _stopButton(),
                 ),
               ),
               Padding(
@@ -183,7 +202,7 @@ class _RecordScreenState extends State<RecordScreen> {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text('한 번에 일정 하나만 말해주세요.',
+                    const Text('일정 여러 개를 한 번에 말해도 돼요.',
                         style: TextStyle(fontSize: 17, color: AppColors.sub)),
                   ],
                 ),
