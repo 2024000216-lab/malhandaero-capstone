@@ -1,17 +1,39 @@
-# malhandaero
+# 말한대로 와이어프레임 5차
 
-A new Flutter project.
+노약자용 음성 일정 등록 앱 **말한대로**의 5차 와이어프레임입니다. (팀 듀얼코어)
 
-## Getting Started
+## 보는 법
 
-This project is a starting point for a Flutter application.
+- `index.html`을 브라우저로 열면 전체 화면 목록이 나옵니다.
+- 저장소에서 GitHub Pages를 켜면 링크로 바로 공유할 수 있습니다.
 
-A few resources to get you started if this is your first Flutter project:
+## 화면 목록
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+| 번호 | 파일 | 화면 | 4차 대비 변경점 |
+|---|---|---|---|
+| 01 | `screens/01-save-confirm.html` | 이렇게 저장할까요? | 일정별로 날짜·시간·장소·할 일 칸 분리, 칸마다 [고치기] |
+| 02 | `screens/02-edit-field.html` | 항목 바꾸기 | 큰 시간 버튼 4개 + 말로 바꾸기 |
+| 03 | `screens/03-menu.html` | 메뉴 | 일정 관리 진입, 보기 설정 바로 켜기 (보고서 모드 제거) |
+| 04 | `screens/04-settings-colorblind.html` | 설정 — 색약 모드 | 켜짐/꺼짐 하나 + 미리보기 |
+| 05 | `screens/05-schedule-colorblind.html` | 일정 관리 — 색약 모드 | 색 대신 테두리 모양·글자로 상태 구분 |
+| 06 | `screens/06-large-home.html` | 크게 보기 — 홈 | 다음 일정 하나만 크게, 소리로 읽어주기 |
+| 07 | `screens/07-large-confirm.html` | 크게 보기 — 확인 | 일정 하나씩, 맞아요 / 고칠래요 |
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 디자인 규칙
+
+- 화면 기준 너비 390px, 터치 영역 최소 48px
+- 본문 글자 17px 이상, 크게 보기 모드 24px 이상
+- 색약 모드: 상태를 색만으로 구분하지 않음 (끝남 = 점선 + 글자, 다음 일정 = 굵은 테두리 + 글자)
+- 지우기 같은 위험한 동작은 ✕ 아이콘 + 글자로 표시
+
+## 폴더 구조
+
+```
+malhandaero-wireframe-v5/
+├── index.html          # 화면 목록
+├── css/base.css        # 공통 스타일
+├── screens/            # 화면별 HTML (01~07)
+└── README.md
+```
+
+> 정적 와이어프레임입니다. 실제 앱(Flutter) 코드와는 별개입니다.

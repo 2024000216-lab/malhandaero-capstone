@@ -1,0 +1,112 @@
+/* 말한대로 와이어프레임 5차 — 공통 스타일 */
+:root {
+  --blue: #2b4acb;
+  --ink: #1a1a1a;
+  --canvas: #ecebe7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  font-family:
+    "Noto Sans KR",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: var(--ink);
+}
+
+button,
+a {
+  font-family: inherit;
+  cursor: pointer;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* 폰 화면 프레임 (390px 기준) */
+.screen {
+  width: 390px;
+  max-width: 100%;
+  margin: 16px auto 32px;
+  overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 0 0 1px #d6d4ce;
+}
+
+.back-to-index {
+  display: block;
+  width: 390px;
+  max-width: 100%;
+  margin: 20px auto 0;
+  font-size: 15px;
+  color: #444;
+}
+
+/* 목록 페이지 */
+.index {
+  padding: 40px 20px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+.index h1 {
+  margin: 0 0 4px;
+  font-size: 32px;
+}
+.index p {
+  margin: 0 0 28px;
+  color: #555;
+}
+.screen-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+.screen-list a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px;
+  background: #fff;
+  border: 1.5px solid #d6d4ce;
+  border-radius: 16px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.screen-list a:hover {
+  border-color: var(--ink);
+}
+.screen-list .num {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--blue);
+}
+.screen-list .name {
+  font-size: 19px;
+  font-weight: 800;
+}
+.screen-list .desc {
+  font-size: 14px;
+  color: #555;
+}
+
+@media (max-width: 430px) {
+  .screen {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .back-to-index {
+    padding: 0 16px 12px;
+  }
+}

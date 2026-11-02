@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>말한대로 · 항목 바꾸기</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&amp;display=swap"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+  </head>
+  <body>
+    <a class="back-to-index" href="../index.html">← 전체 화면</a>
+    <div
+      class="screen"
+      style="
+        min-height: 844px;
+        box-sizing: border-box;
+        background: #8a8a8a;
+        color: #1a1a1a;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      "
+    >
+      <div style="flex: 1"></div>
+      <div
+        style="
+          background: #ffffff;
+          border-radius: 24px 24px 0 0;
+          padding: 20px 20px 28px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+          "
+        >
+          <div style="display: flex; flex-direction: column; gap: 4px">
+            <span style="font-size: 17px; font-weight: 700; color: #555555"
+              >정형외과</span
+            >
+            <span style="font-size: 28px; font-weight: 800"
+              >몇 시로 바꿀까요?</span
+            >
+          </div>
+          <button
+            aria-label="닫기"
+            style="
+              flex: none;
+              height: 48px;
+              border: 0;
+              border-radius: 12px;
+              background: #f2f1ed;
+              font: inherit;
+              font-size: 17px;
+              font-weight: 700;
+              color: #1a1a1a;
+              padding: 0 14px;
+            "
+          >
+            닫기
+          </button>
+        </div>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+          "
+        >
+          <button
+            style="
+              height: 76px;
+              border: 3px solid #2b4acb;
+              border-radius: 16px;
+              background: #eef1fb;
+              font: inherit;
+              color: #1a1a1a;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <span style="font-size: 22px; font-weight: 800">오전 9시</span
+            ><span style="font-size: 14px; font-weight: 800; color: #2b4acb"
+              >지금 시간</span
+            >
+          </button>
+          <button
+            style="
+              height: 76px;
+              border: 2px solid #6b6b6b;
+              border-radius: 16px;
+              background: #ffffff;
+              font: inherit;
+              font-size: 22px;
+              font-weight: 800;
+              color: #1a1a1a;
+            "
+          >
+            낮 12시
+          </button>
+          <button
+            style="
+              height: 76px;
+              border: 2px solid #6b6b6b;
+              border-radius: 16px;
+              background: #ffffff;
+              font: inherit;
+              font-size: 22px;
+              font-weight: 800;
+              color: #1a1a1a;
+            "
+          >
+            오후 3시
+          </button>
+          <button
+            style="
+              height: 76px;
+              border: 2px solid #6b6b6b;
+              border-radius: 16px;
+              background: #ffffff;
+              font: inherit;
+              font-size: 22px;
+              font-weight: 800;
+              color: #1a1a1a;
+            "
+          >
+            오후 6시
+          </button>
+        </div>
+        <button
+          style="
+            height: 76px;
+            border: 0;
+            border-radius: 16px;
+            background: #2b4acb;
+            color: #ffffff;
+            font: inherit;
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+          "
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+            <path d="M5 11a7 7 0 0 0 14 0"></path>
+            <path d="M12 18v3"></path>
+          </svg>
+          다른 시간은 말로 하기
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

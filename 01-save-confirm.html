@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>말한대로 · 저장 확인 (항목형)</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&amp;display=swap"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+  </head>
+  <body>
+    <a class="back-to-index" href="../index.html">← 전체 화면</a>
+    <div
+      class="screen"
+      style="
+        min-height: 1180px;
+        box-sizing: border-box;
+        background: #ffffff;
+        color: #1a1a1a;
+        display: flex;
+        flex-direction: column;
+      "
+    >
+      <div
+        style="
+          height: 60px;
+          box-sizing: border-box;
+          padding: 0 16px;
+          border-bottom: 1px solid #e3e1dc;
+          display: grid;
+          grid-template-columns: 72px 1fr 72px;
+          align-items: center;
+        "
+      >
+        <button
+          style="
+            background: none;
+            border: 0;
+            font: inherit;
+            font-size: 18px;
+            color: #1a1a1a;
+            text-align: left;
+            min-height: 44px;
+            padding: 0;
+          "
+        >
+          취소
+        </button>
+        <div style="font-size: 20px; font-weight: 800; text-align: center">
+          이렇게 저장할까요?
+        </div>
+        <div></div>
+      </div>
+      <div
+        style="
+          flex: 1;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        "
+      >
+        <div
+          style="
+            background: #f2f1ed;
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+          "
+        >
+          <span style="font-size: 15px; font-weight: 700; color: #4a4a4a"
+            >제가 들은 말</span
+          >
+          <span style="font-size: 19px; line-height: 1.5"
+            >“내일 오후 2시에 치과 가고, 금요일에 정형외과”</span
+          >
+        </div>
+        <div style="font-size: 24px; font-weight: 800">
+          일정 <span style="color: #2b4acb">2개</span>, 맞나요?
+        </div>
+        <div
+          style="
+            border: 2.5px solid #1a1a1a;
+            border-radius: 20px;
+            overflow: hidden;
+          "
+        >
+          <div
+            style="
+              background: #1a1a1a;
+              color: #ffffff;
+              padding: 12px 16px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+          >
+            <span
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #ffffff;
+                color: #1a1a1a;
+                font-size: 18px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              >1</span
+            >
+            <span style="font-size: 20px; font-weight: 800">치과</span>
+          </div>
+          <div
+            style="
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="3.5" y="5" width="17" height="15" rx="2.5"></rect>
+                <path d="M3.5 10h17M8 3v4M16 3v4"></path>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >날짜</span
+              >
+              <span style="font-size: 22px; font-weight: 800; color: #1a1a1a"
+                >10월 20일 화요일</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              고치기
+            </button>
+          </div>
+          <div
+            style="
+              border-top: 1.5px solid #e3e1dc;
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="8.5"></circle>
+                <path d="M12 7v5l3.5 2"></path>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >시간</span
+              >
+              <span style="font-size: 22px; font-weight: 800; color: #1a1a1a"
+                >오후 2시</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              고치기
+            </button>
+          </div>
+          <div
+            style="
+              border-top: 1.5px solid #e3e1dc;
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"
+                ></path>
+                <circle cx="12" cy="9" r="2.5"></circle>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >장소</span
+              >
+              <span style="font-size: 20px; font-weight: 500; color: #6b6b6b"
+                >없음</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              넣기
+            </button>
+          </div>
+          <div
+            style="
+              border-top: 1.5px solid #e3e1dc;
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12l4.5 4.5L19 7"></path>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >할 일</span
+              >
+              <span style="font-size: 22px; font-weight: 800; color: #1a1a1a"
+                >치과</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              고치기
+            </button>
+          </div>
+        </div>
+        <div
+          style="
+            border: 2.5px solid #1a1a1a;
+            border-radius: 20px;
+            overflow: hidden;
+          "
+        >
+          <div
+            style="
+              background: #1a1a1a;
+              color: #ffffff;
+              padding: 12px 16px;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+          >
+            <span
+              style="
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: #ffffff;
+                color: #1a1a1a;
+                font-size: 18px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+              >2</span
+            >
+            <span style="font-size: 20px; font-weight: 800">정형외과</span>
+          </div>
+          <div
+            style="
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="3.5" y="5" width="17" height="15" rx="2.5"></rect>
+                <path d="M3.5 10h17M8 3v4M16 3v4"></path>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >날짜</span
+              >
+              <span style="font-size: 22px; font-weight: 800; color: #1a1a1a"
+                >10월 23일 금요일</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              고치기
+            </button>
+          </div>
+          <div
+            style="
+              border-top: 1.5px solid #e3e1dc;
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="8.5"></circle>
+                <path d="M12 7v5l3.5 2"></path>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >시간</span
+              >
+              <span style="font-size: 22px; font-weight: 800; color: #1a1a1a"
+                >오전 9시</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              고치기
+            </button>
+          </div>
+          <div
+            style="
+              border-top: 1.5px solid #e3e1dc;
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"
+                ></path>
+                <circle cx="12" cy="9" r="2.5"></circle>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >장소</span
+              >
+              <span style="font-size: 20px; font-weight: 500; color: #6b6b6b"
+                >없음</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              넣기
+            </button>
+          </div>
+          <div
+            style="
+              border-top: 1.5px solid #e3e1dc;
+              min-height: 76px;
+              padding: 10px 16px;
+              display: flex;
+              align-items: center;
+              gap: 14px;
+            "
+          >
+            <span
+              style="
+                width: 44px;
+                height: 44px;
+                flex: none;
+                border-radius: 50%;
+                background: #f2f1ed;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a1a1a;
+              "
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12l4.5 4.5L19 7"></path>
+              </svg>
+            </span>
+            <span style="flex: 1; display: flex; flex-direction: column">
+              <span style="font-size: 15px; font-weight: 700; color: #555555"
+                >할 일</span
+              >
+              <span style="font-size: 22px; font-weight: 800; color: #1a1a1a"
+                >정형외과</span
+              >
+            </span>
+            <button
+              style="
+                flex: none;
+                min-width: 72px;
+                height: 48px;
+                border: 2px solid #2b4acb;
+                border-radius: 12px;
+                background: #ffffff;
+                font: inherit;
+                font-size: 17px;
+                font-weight: 800;
+                color: #2b4acb;
+              "
+            >
+              고치기
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        style="
+          border-top: 1px solid #e3e1dc;
+          padding: 16px 20px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        "
+      >
+        <button
+          style="
+            height: 64px;
+            border: 0;
+            border-radius: 16px;
+            background: #2b4acb;
+            color: #ffffff;
+            font: inherit;
+            font-size: 22px;
+            font-weight: 800;
+          "
+        >
+          네, 저장할게요
+        </button>
+        <button
+          style="
+            height: 52px;
+            border: 0;
+            background: none;
+            color: #1a1a1a;
+            font: inherit;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: underline;
+          "
+        >
+          처음부터 다시 말하기
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

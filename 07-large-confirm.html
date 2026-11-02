@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>말한대로 · 크게 보기 — 확인</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&amp;display=swap"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+  </head>
+  <body>
+    <a class="back-to-index" href="../index.html">← 전체 화면</a>
+    <div
+      class="screen"
+      style="
+        min-height: 844px;
+        box-sizing: border-box;
+        background: #ffffff;
+        color: #1a1a1a;
+        padding: 20px 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <button
+          style="
+            background: none;
+            border: 0;
+            font: inherit;
+            font-size: 20px;
+            color: #1a1a1a;
+            min-height: 48px;
+            padding: 0;
+          "
+        >
+          취소
+        </button>
+        <div style="display: flex; align-items: center; gap: 8px">
+          <span
+            style="
+              width: 28px;
+              height: 8px;
+              border-radius: 999px;
+              background: #1a1a1a;
+            "
+          ></span>
+          <span
+            style="
+              width: 28px;
+              height: 8px;
+              box-sizing: border-box;
+              border-radius: 999px;
+              border: 2px solid #1a1a1a;
+            "
+          ></span>
+          <span style="font-size: 20px; font-weight: 800; margin-left: 4px"
+            >1 / 2</span
+          >
+        </div>
+      </div>
+
+      <div style="font-size: 32px; font-weight: 800">이 일정이 맞나요?</div>
+
+      <div
+        style="border: 3px solid #1a1a1a; border-radius: 24px; overflow: hidden"
+      >
+        <div
+          style="
+            padding: 16px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          "
+        >
+          <span style="font-size: 18px; color: #4a4a4a">할 일</span>
+          <span style="font-size: 40px; font-weight: 800">치과</span>
+        </div>
+        <div
+          style="
+            padding: 14px 22px;
+            border-top: 2px solid #e3e1dc;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          "
+        >
+          <span style="font-size: 18px; color: #4a4a4a">날짜</span>
+          <span style="font-size: 28px; font-weight: 800"
+            >10월 20일 화요일</span
+          >
+        </div>
+        <div
+          style="
+            padding: 14px 22px;
+            border-top: 2px solid #e3e1dc;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          "
+        >
+          <span style="font-size: 18px; color: #4a4a4a">시간</span>
+          <span style="font-size: 28px; font-weight: 800">오후 2시</span>
+        </div>
+        <div
+          style="
+            padding: 14px 22px;
+            border-top: 2px solid #e3e1dc;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          "
+        >
+          <span style="font-size: 18px; color: #4a4a4a">장소</span>
+          <span style="font-size: 24px; color: #5a5a5a">없음</span>
+        </div>
+      </div>
+
+      <button
+        style="
+          height: 52px;
+          border: 0;
+          border-radius: 14px;
+          background: #f2f1ed;
+          font: inherit;
+          font-size: 19px;
+          font-weight: 700;
+          color: #1a1a1a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+        "
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M11 5L6 9H3v6h3l5 4z"></path>
+          <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
+        </svg>
+        소리로 읽어주기
+      </button>
+
+      <div style="flex: 1"></div>
+
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+        "
+      >
+        <button
+          style="
+            height: 96px;
+            border: 3px solid #1a1a1a;
+            border-radius: 20px;
+            background: #ffffff;
+            font: inherit;
+            font-size: 26px;
+            font-weight: 800;
+            color: #1a1a1a;
+          "
+        >
+          고칠래요
+        </button>
+        <button
+          style="
+            height: 96px;
+            border: 0;
+            border-radius: 20px;
+            background: #2b4acb;
+            font: inherit;
+            font-size: 26px;
+            font-weight: 800;
+            color: #ffffff;
+          "
+        >
+          맞아요
+        </button>
+      </div>
+    </div>
+  </body>
+</html>

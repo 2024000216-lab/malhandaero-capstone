@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>말한대로 · 메뉴</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&amp;display=swap"
+    />
+    <link rel="stylesheet" href="../css/base.css" />
+  </head>
+  <body>
+    <a class="back-to-index" href="../index.html">← 전체 화면</a>
+    <div
+      class="screen"
+      style="
+        min-height: 844px;
+        box-sizing: border-box;
+        background: #ffffff;
+        color: #1a1a1a;
+        display: flex;
+        flex-direction: column;
+      "
+    >
+      <div
+        style="
+          height: 60px;
+          box-sizing: border-box;
+          padding: 0 16px;
+          border-bottom: 1px solid #e3e1dc;
+          display: grid;
+          grid-template-columns: 80px 1fr 80px;
+          align-items: center;
+        "
+      >
+        <button
+          aria-label="메뉴 닫기"
+          style="
+            background: none;
+            border: 0;
+            font: inherit;
+            font-size: 18px;
+            color: #1a1a1a;
+            min-height: 44px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          "
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+          닫기
+        </button>
+        <div style="font-size: 20px; font-weight: 800; text-align: center">
+          메뉴
+        </div>
+        <div></div>
+      </div>
+
+      <div
+        style="
+          flex: 1;
+          padding: 24px 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        "
+      >
+        <div style="font-size: 17px; font-weight: 700; color: #4a4a4a">
+          무엇을 볼까요?
+        </div>
+
+        <a
+          href="05-schedule-colorblind.html"
+          style="
+            text-decoration: none;
+            color: #1a1a1a;
+            border: 2px solid #1a1a1a;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 14px">
+            <div
+              style="
+                width: 60px;
+                height: 60px;
+                border-radius: 16px;
+                background: #e8ecfb;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #2b4acb;
+              "
+            >
+              <svg
+                width="30"
+                height="30"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <rect x="3.5" y="5" width="17" height="15" rx="2.5"></rect>
+                <path d="M3.5 10h17M8 3v4M16 3v4"></path>
+              </svg>
+            </div>
+            <div
+              style="flex: 1; display: flex; flex-direction: column; gap: 2px"
+            >
+              <div style="font-size: 24px; font-weight: 800">일정 관리</div>
+              <div style="font-size: 16px; color: #555555">
+                보고, 고치고, 지워요
+              </div>
+            </div>
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#1A1A1A"
+              stroke-width="2.4"
+              aria-hidden="true"
+            >
+              <path d="M9 6l6 6-6 6"></path>
+            </svg>
+          </div>
+          <div
+            style="
+              background: #f2f1ed;
+              border-radius: 12px;
+              padding: 12px 14px;
+              font-size: 16px;
+            "
+          >
+            오늘 <b>2개</b> · 다음 <b>오후 3시 팀 회의</b>
+          </div>
+        </a>
+
+        <div
+          style="
+            font-size: 17px;
+            font-weight: 700;
+            color: #4a4a4a;
+            padding-top: 10px;
+          "
+        >
+          보기 설정
+        </div>
+
+        <div
+          style="
+            border: 1.5px solid #d6d4ce;
+            border-radius: 16px;
+            overflow: hidden;
+          "
+        >
+          <button
+            style="
+              width: 100%;
+              background: #ffffff;
+              border: 0;
+              font: inherit;
+              min-height: 64px;
+              padding: 0 18px;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              text-align: left;
+              color: #1a1a1a;
+            "
+          >
+            <span style="flex: 1; display: flex; flex-direction: column"
+              ><span style="font-size: 19px; font-weight: 700">크게 보기</span
+              ><span style="font-size: 14px; color: #555555"
+                >핵심 기능만 크게</span
+              ></span
+            >
+            <span
+              style="
+                font-size: 16px;
+                font-weight: 800;
+                border: 2px solid #1a1a1a;
+                border-radius: 999px;
+                padding: 6px 16px;
+              "
+              >꺼짐</span
+            >
+          </button>
+          <button
+            style="
+              width: 100%;
+              background: #ffffff;
+              border: 0;
+              border-top: 1px solid #eceae5;
+              font: inherit;
+              min-height: 64px;
+              padding: 0 18px;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              text-align: left;
+              color: #1a1a1a;
+            "
+          >
+            <span style="flex: 1; display: flex; flex-direction: column"
+              ><span style="font-size: 19px; font-weight: 700">색약 모드</span
+              ><span style="font-size: 14px; color: #555555"
+                >색 대신 모양과 글자로 구분</span
+              ></span
+            >
+            <span
+              style="
+                font-size: 16px;
+                font-weight: 800;
+                border: 2px solid #1a1a1a;
+                border-radius: 999px;
+                padding: 6px 16px;
+              "
+              >꺼짐</span
+            >
+          </button>
+          <a
+            href="04-settings-colorblind.html"
+            style="
+              text-decoration: none;
+              background: #ffffff;
+              border-top: 1px solid #eceae5;
+              min-height: 64px;
+              padding: 0 18px;
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              color: #1a1a1a;
+            "
+          >
+            <span style="flex: 1; font-size: 19px; font-weight: 700"
+              >설정 전체 보기</span
+            >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#777777"
+              stroke-width="2.2"
+              aria-hidden="true"
+            >
+              <path d="M9 6l6 6-6 6"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
