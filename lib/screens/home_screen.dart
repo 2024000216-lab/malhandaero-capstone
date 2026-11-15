@@ -4,15 +4,20 @@ import 'package:permission_handler/permission_handler.dart';
 import '../data/schedule_repository.dart';
 import '../models/schedule.dart';
 import '../services/ai_service.dart';
+import '../services/app_settings.dart';
 import '../theme.dart';
 import '../utils/format.dart';
 import '../widgets/common.dart';
+import '../widgets/dashed_border.dart';
+import '../widgets/mode_widgets.dart';
 import 'detail_screen.dart';
 import 'edit_screen.dart';
+import 'menu_screen.dart';
 import 'permission_screen.dart';
 import 'record_screen.dart';
 
-/// S-01 홈: 이번 주 7일 + 고른 날의 일정 + 큰 마이크 버튼
+/// S-01 홈 (일정 관리): 이번 주 7일 + 고른 날의 일정 + 큰 마이크 버튼
+/// 와이어프레임 5차: 메뉴 버튼, 끝난 일정 / 다음 일정 표시 (색약 모드는 점선·굵은 테두리 + 글자)
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -109,6 +114,21 @@ class _HomeScreenState extends State<HomeScreen> {
     _load();
   }
 
+  Future<void> _openMenu() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const MenuScreen()));
+    _load();
+  }
+
+  /// 이미 지난 일정인지 (지난 날 / 오늘 시작 시각이 지남 / 끝나는 시각이 있으면 그 시각이 지남)
+  bool _isDone(Schedule s, DateTime now) {
+    final day = dateOnly(s.date);
+    final today = dateOnly(now);
+    if (day.isBefore(today)) return true;
+    if (day.isAfter(today) || s.allDay || s.startMin == null) return false;
+    final nowMin = now.hour * 60 + now.minute;
+    return (s.endMin ?? s.startMin!) <= nowMin;
+  }
+
   /// '말한대로' 글자를 길게 누르면 API 연결 테스트
   Future<void> _healthCheck() async {
     showDialog(
@@ -134,6 +154,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isToday = sameDay(_selected, _today);
+    final colorBlind = SettingsScope.of(context).colorBlind;
+    final now = DateTime.now();
+    // 오늘이면 아직 시작 전인 첫 일정을 "다음 일정"으로 표시
+    int? nextId;
+    if (isToday) {
+      for (final s in _items) {
+        if (!s.allDay && s.startMin != null && !_isDone(s, now)) {
+          nextId = s.id;
+          break;
+        }
+      }
+    }
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -169,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 10),
                   if (_items.isEmpty) _empty(),
                   for (final s in _items) ...[
-                    _card(s),
+                    _card(s, done: _isDone(s, now), next: s.id == nextId, colorBlind: colorBlind),
                     const SizedBox(height: 10),
                   ],
                 ],
@@ -188,10 +220,26 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GestureDetector(
-            onLongPress: _healthCheck,
-            child: const Text('말한대로',
-                style: TextStyle(fontSize: 16, color: AppColors.sub)),
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onLongPress: _healthCheck,
+                  child: const Text('말한대로',
+                      style: TextStyle(fontSize: 16, color: AppColors.sub)),
+                ),
+              ),
+              TextButton.icon(
+                onPressed: _openMenu,
+                icon: const Icon(Icons.menu_rounded, size: 24),
+                label: const Text('메뉴'),
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.text,
+                  minimumSize: const Size(64, 44),
+                  textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
           ),
           Row(
             children: [
@@ -266,75 +314,106 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _card(Schedule s) {
+  Widget _card(Schedule s, {required bool done, required bool next, required bool colorBlind}) {
+    final primary = AppColors.primaryOf(context);
+    final timeColor = done ? AppColors.disabledFg : primary;
+    final textColor = done ? AppColors.sub : AppColors.text;
+
     final Widget time;
     if (s.allDay || s.startMin == null) {
       time = Text(s.allDay ? '종일' : '시간\n없음',
-          style: const TextStyle(
-              fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.primary));
+          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: timeColor));
     } else {
       final (period, hm) = formatTimeTwoLine(s.startMin!);
       time = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(period,
-              style: const TextStyle(fontSize: 14, color: AppColors.primary)),
+          Text(period, style: TextStyle(fontSize: 14, color: timeColor)),
           Text(hm,
-              style: const TextStyle(
-                  fontSize: 19, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700, color: timeColor)),
         ],
       );
     }
-    return Material(
+
+    // 테두리: 끝남 = 점선(색약) / 연한 선, 다음 일정 = 굵은 선, 나머지 = 기본
+    final BorderSide side;
+    if (done) {
+      side = colorBlind
+          ? BorderSide.none // 점선은 DashedBorder가 그린다
+          : const BorderSide(color: AppColors.lightBorder, width: 1.5);
+    } else if (next) {
+      side = BorderSide(color: primary, width: colorBlind ? 4 : 2.5);
+    } else {
+      side = BorderSide(
+        color: colorBlind ? AppColors.ink : const Color(0xFFB5B5B0),
+        width: colorBlind ? 2 : 1.5,
+      );
+    }
+
+    Widget card = Material(
       color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: Color(0xFFB5B5B0), width: 1.5),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: side),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
         onTap: () => _openDetail(s),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(width: 64, child: time),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(s.title,
-                        style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 4),
-                    Text(s.location ?? '장소 없음',
-                        style: const TextStyle(fontSize: 16, color: AppColors.sub)),
-                    if (s.isRepeat) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.repeat_rounded, size: 18, color: AppColors.primary),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(Repeat.name(s.repeatRule!, s.date),
-                                style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.primary)),
+              if (next) ...[
+                TextTag(text: '▶ 다음 일정', filled: true, color: primary),
+                const SizedBox(height: 8),
+              ],
+              Row(
+                children: [
+                  SizedBox(width: 64, child: time),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(s.title,
+                            style: TextStyle(
+                                fontSize: 19, fontWeight: FontWeight.w700, color: textColor)),
+                        const SizedBox(height: 4),
+                        Text(s.location ?? '장소 없음',
+                            style: const TextStyle(fontSize: 16, color: AppColors.sub)),
+                        if (s.isRepeat) ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(Icons.repeat_rounded, size: 18, color: timeColor),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(Repeat.name(s.repeatRule!, s.date),
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                        color: timeColor)),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
-                  ],
-                ),
+                      ],
+                    ),
+                  ),
+                  if (done)
+                    const TextTag(text: '끝남', color: AppColors.sub)
+                  else
+                    const Text('자세히 ›', style: TextStyle(fontSize: 15, color: AppColors.sub)),
+                ],
               ),
-              const Text('자세히 ›',
-                  style: TextStyle(fontSize: 15, color: AppColors.sub)),
             ],
           ),
         ),
       ),
     );
+
+    if (done && colorBlind) {
+      card = DashedBorder(color: AppColors.border, radius: 14, child: card);
+    }
+    return card;
   }
 
   Widget _empty() {

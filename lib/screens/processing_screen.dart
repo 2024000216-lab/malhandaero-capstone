@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../services/ai_service.dart';
+import '../services/app_settings.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import 'confirm_screen.dart';
 import 'error_screen.dart';
+import 'large_confirm_screen.dart';
 
 /// S-03 처리 중 — 실제 진행 단계(글자로 바꾸기 → 일정 찾기)를 그대로 보여준다
 class ProcessingScreen extends StatefulWidget {
@@ -38,9 +40,16 @@ class _ProcessingScreenState extends State<ProcessingScreen> {
       setState(() => _step = 2);
 
       File(widget.audioPath).delete().ignore(); // 다 쓴 녹음 파일 삭제
+      // 크게 보기 모드이고 빠진 칸이 없으면 하나씩 크게 확인, 아니면 칸별로 고치는 확인 화면
+      final large = AppSettings.instance.largeMode &&
+          draftsFromResults(results).every((d) => d.missing.isEmpty);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => ConfirmScreen(results: results)),
+        MaterialPageRoute(
+          builder: (_) => large
+              ? LargeConfirmScreen(results: results)
+              : ConfirmScreen(results: results),
+        ),
       );
     } on AiException catch (e) {
       if (_cancelled || !mounted) return;

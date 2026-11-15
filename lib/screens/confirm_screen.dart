@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
 
-import '../data/schedule_repository.dart';
 import '../models/schedule.dart';
 import '../services/ai_service.dart';
-import '../services/notification_service.dart';
+import '../services/app_settings.dart';
 import '../theme.dart';
 import '../utils/format.dart';
 import '../widgets/common.dart';
 import '../widgets/schedule_options.dart';
-import 'done_screen.dart';
 import 'record_screen.dart';
+import 'save_flow.dart';
+import 'time_sheet.dart';
 
-/// S-04 확인
+/// AI 결과 → 확인 화면용 초안 (크게 보기 확인 화면과 같이 사용)
+List<ScheduleDraft> draftsFromResults(List<ExtractResult> results) => results
+    .map((r) => ScheduleDraft()
+      ..title = r.title
+      ..date = r.date
+      ..startMin = r.startMin
+      ..endMin = r.endMin
+      ..allDay = r.allDay
+      ..location = r.location
+      ..transcript = r.transcript
+      ..repeatRule = r.repeatRule
+      ..repeatMonths = r.repeatRule == null ? null : r.repeatMonths
+      ..repeatUntilDate = r.repeatRule == null ? null : r.repeatUntil)
+    .toList();
+
+/// S-04 확인 (와이어프레임 5차 — 항목형)
 /// - 한 번에 여러 일정을 말하면 하나씩 차례로 확인한 뒤 한꺼번에 저장
-/// - 들은 문장에서 AI가 어느 부분을 날짜·시간·장소·할 일로 읽었는지 색+밑줄로 표시
-/// - 아래 칸에도 같은 색 이름표를 붙여 연결
-/// - 입력칸 대신 "바꾸기" 버튼, 시간은 큰 버튼으로 고르기
+/// - 일정마다 번호 머리띠 + 날짜·시간·장소·할 일 칸, 칸마다 [고치기] / 빈 칸은 [넣기]
+/// - 들은 문장에서 AI가 읽은 부분은 밑줄로 표시 (색약 모드는 굵은 밑줄만)
+/// - 시간 고치기는 바텀시트, 시간을 못 들었으면 큰 버튼으로 바로 고르기
 class ConfirmScreen extends StatefulWidget {
   final List<ExtractResult> results;
   const ConfirmScreen({super.key, required this.results});
@@ -27,16 +42,13 @@ class ConfirmScreen extends StatefulWidget {
 class _Mark {
   final int start;
   final int end;
-  final Color bg;
-  final Color fg;
-  _Mark(this.start, this.end, this.bg, this.fg);
+  _Mark(this.start, this.end);
 }
 
 class _ConfirmScreenState extends State<ConfirmScreen> {
   late final List<ExtractResult> _results;
   late final List<ScheduleDraft> _drafts;
   int _index = 0; // 지금 확인 중인 일정
-  late bool _showTimeChoices;
   bool _saving = false;
 
   ScheduleDraft get _d => _drafts[_index];
@@ -49,29 +61,13 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
   void initState() {
     super.initState();
     _results = List.of(widget.results);
-    _drafts = _results
-        .map((r) => ScheduleDraft()
-          ..title = r.title
-          ..date = r.date
-          ..startMin = r.startMin
-          ..endMin = r.endMin
-          ..allDay = r.allDay
-          ..location = r.location
-          ..transcript = r.transcript
-          ..repeatRule = r.repeatRule
-          ..repeatMonths = r.repeatRule == null ? null : r.repeatMonths
-          ..repeatUntilDate = r.repeatRule == null ? null : r.repeatUntil)
-        .toList();
-    _showTimeChoices = !_d.hasTime;
+    _drafts = draftsFromResults(_results);
   }
 
   // ───────── 여러 일정 넘기기 ─────────
 
   void _goTo(int i) {
-    setState(() {
-      _index = i;
-      _showTimeChoices = !_d.hasTime;
-    });
+    setState(() => _index = i);
   }
 
   Future<void> _removeCurrent() async {
@@ -88,7 +84,6 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
       _results.removeAt(_index);
       _drafts.removeAt(_index);
       if (_index >= _count) _index = _count - 1;
-      _showTimeChoices = !_d.hasTime;
     });
   }
 
@@ -179,35 +174,27 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
     }
   }
 
+  Future<void> _openTimeSheet() async {
+    final pick = await showTimeSheet(
+      context,
+      title: _d.title,
+      currentMin: _d.startMin,
+      allDay: _d.allDay,
+    );
+    if (pick == null || !mounted) return;
+    setState(() {
+      _d.allDay = pick.allDay;
+      _d.startMin = pick.startMin;
+      _d.endMin = null;
+    });
+  }
+
   // ───────── 저장 / 나가기 ─────────
 
   Future<void> _save() async {
     if (_saving) return;
     setState(() => _saving = true);
-    final repo = ScheduleRepository.instance;
-    if (_drafts.any((d) => d.alarm)) await NotificationService.requestPermission();
-
-    // 반복 일정은 날짜마다 저장된다. 완료 화면에는 각 일정의 첫 날만 보여준다.
-    final saved = <Schedule>[];
-    final firsts = <Schedule>[];
-    for (final d in _drafts) {
-      final series = await repo.insertSeries(d.toSchedule());
-      await NotificationService.scheduleAll(series);
-      saved.addAll(series);
-      firsts.add(series.first);
-    }
-    if (!mounted) return;
-
-    final undo = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(builder: (_) => DoneScreen.many(schedules: firsts)),
-    );
-    if (undo == true) {
-      for (final s in saved) {
-        await repo.delete(s.id!);
-      }
-      await NotificationService.cancelAll(saved.map((s) => s.id!));
-    }
+    await saveDraftsAndShowDone(context, _drafts);
     if (mounted) setState(() => _saving = false);
   }
 
@@ -294,36 +281,7 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
                     ],
                     _heardBox(),
                     const SizedBox(height: 12),
-                    Box(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        children: [
-                          _fieldRow(
-                            tag: '날짜',
-                            bg: AppColors.dateBg,
-                            fg: AppColors.dateFg,
-                            value: _d.date == null ? null : formatDateKo(_d.date!),
-                            onChange: _changeDate,
-                          ),
-                          _timeRow(),
-                          _fieldRow(
-                            tag: '장소',
-                            bg: AppColors.placeBg,
-                            fg: AppColors.placeFg,
-                            value: _d.location ?? '없음',
-                            onChange: () => _changeText(isTitle: false),
-                          ),
-                          _fieldRow(
-                            tag: '할 일',
-                            bg: AppColors.titleBg,
-                            fg: AppColors.titleFg,
-                            value: _d.title,
-                            onChange: () => _changeText(isTitle: true),
-                            last: true,
-                          ),
-                        ],
-                      ),
-                    ),
+                    _draftCard(),
                     const SizedBox(height: 12),
                     Box(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
@@ -424,39 +382,46 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
     );
   }
 
-  /// 들은 문장 + 색 하이라이트 (지금 확인 중인 일정 부분만)
+  /// 들은 문장 + AI가 읽은 부분 밑줄 (지금 확인 중인 일정 부분만)
   Widget _heardBox() {
+    final colorBlind = SettingsScope.of(context).colorBlind;
     final r = _results[_index];
     final text = r.transcript;
     final marks = <_Mark>[];
-    void add(String? span, Color bg, Color fg) {
+    void add(String? span) {
       if (span == null || span.isEmpty) return;
       final i = text.indexOf(span);
       if (i < 0) return;
-      final m = _Mark(i, i + span.length, bg, fg);
+      final m = _Mark(i, i + span.length);
       final overlaps = marks.any((o) => m.start < o.end && o.start < m.end);
       if (!overlaps) marks.add(m);
     }
 
-    add(r.spanDate, AppColors.dateBg, AppColors.dateFg);
-    add(r.spanTime, AppColors.timeBg, AppColors.timeFg);
-    add(r.spanLocation, AppColors.placeBg, AppColors.placeFg);
-    add(r.spanTitle, AppColors.titleBg, AppColors.titleFg);
+    add(r.spanDate);
+    add(r.spanTime);
+    add(r.spanLocation);
+    add(r.spanTitle);
     marks.sort((a, b) => a.start.compareTo(b.start));
+
+    final markStyle = colorBlind
+        ? const TextStyle(
+            fontWeight: FontWeight.w800,
+            decoration: TextDecoration.underline,
+            decorationColor: AppColors.ink,
+            decorationThickness: 3,
+          )
+        : const TextStyle(
+            backgroundColor: AppColors.dateBg,
+            decoration: TextDecoration.underline,
+            decorationColor: AppColors.primary,
+            decorationThickness: 3,
+          );
 
     final spans = <TextSpan>[const TextSpan(text: '“')];
     var pos = 0;
     for (final m in marks) {
       if (m.start > pos) spans.add(TextSpan(text: text.substring(pos, m.start)));
-      spans.add(TextSpan(
-        text: text.substring(m.start, m.end),
-        style: TextStyle(
-          backgroundColor: m.bg,
-          decoration: TextDecoration.underline,
-          decorationColor: m.fg,
-          decorationThickness: 3,
-        ),
-      ));
+      spans.add(TextSpan(text: text.substring(m.start, m.end), style: markStyle));
       pos = m.end;
     }
     if (pos < text.length) spans.add(TextSpan(text: text.substring(pos)));
@@ -471,7 +436,8 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('제가 들은 말', style: TextStyle(fontSize: 16, color: AppColors.sub)),
+          const Text('제가 들은 말',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.sub)),
           const SizedBox(height: 8),
           Text.rich(
             TextSpan(children: spans),
@@ -482,63 +448,139 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
     );
   }
 
-  Widget _tag(String label, Color bg, Color fg) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
-        decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(6)),
-        child: Text(label,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: fg)),
-      );
-
-  Widget _changeButton(VoidCallback onPressed) => SizedBox(
-        height: 48,
-        child: OutlinedButton(
-          onPressed: onPressed,
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.text,
-            side: const BorderSide(color: AppColors.border, width: 1.5),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            textStyle: const TextStyle(fontSize: 16),
-          ),
-          child: const Text('바꾸기'),
-        ),
-      );
-
-  /// value가 null이면 "못 들었어요"로 빨갛게 표시
-  Widget _fieldRow({
-    required String tag,
-    required Color bg,
-    required Color fg,
-    required String? value,
-    required VoidCallback onChange,
-    bool last = false,
-  }) {
-    final missing = value == null;
+  /// 번호 머리띠 + 날짜·시간·장소·할 일 칸
+  Widget _draftCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: missing ? AppColors.warnBg : null,
-        border: last ? null : const Border(bottom: BorderSide(color: Color(0xFFE6E6E2))),
+        border: Border.all(color: AppColors.text, width: 2.5),
+        borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Container(
+            color: AppColors.text,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
               children: [
-                _tag(tag, bg, fg),
-                const SizedBox(height: 4),
-                Text(
-                  value ?? '못 들었어요',
-                  style: TextStyle(
-                    fontSize: 21,
-                    fontWeight: FontWeight.w700,
-                    color: missing ? AppColors.danger : AppColors.text,
+                Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                  child: Text('${_index + 1}',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.text)),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    _d.title ?? '할 일을 정해주세요',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white),
                   ),
                 ),
               ],
             ),
           ),
-          _changeButton(onChange),
+          _fieldRow(
+            icon: Icons.calendar_today_rounded,
+            label: '날짜',
+            value: _d.date == null ? null : formatDateKo(_d.date!),
+            onEdit: _changeDate,
+            first: true,
+          ),
+          _timeRow(),
+          _fieldRow(
+            icon: Icons.place_outlined,
+            label: '장소',
+            value: _d.location,
+            emptyText: '없음',
+            emptyIsMissing: false,
+            onEdit: () => _changeText(isTitle: false),
+          ),
+          _fieldRow(
+            icon: Icons.check_rounded,
+            label: '할 일',
+            value: _d.title,
+            onEdit: () => _changeText(isTitle: true),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _editButton(String label, VoidCallback onPressed) {
+    final primary = AppColors.primaryOf(context);
+    return SizedBox(
+      height: 48,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: primary,
+          minimumSize: const Size(72, 48),
+          side: BorderSide(color: primary, width: 2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+        ),
+        child: Text(label),
+      ),
+    );
+  }
+
+  Widget _iconCircle(IconData icon) => Container(
+        width: 44,
+        height: 44,
+        decoration: const BoxDecoration(color: AppColors.grayBg, shape: BoxShape.circle),
+        child: Icon(icon, size: 24, color: AppColors.text),
+      );
+
+  /// value가 null이면: 꼭 필요한 칸은 "못 들었어요"(빨간 글자 + 연한 배경), 장소는 "없음"
+  Widget _fieldRow({
+    required IconData icon,
+    required String label,
+    required String? value,
+    required VoidCallback onEdit,
+    String emptyText = '못 들었어요',
+    bool emptyIsMissing = true,
+    bool first = false,
+  }) {
+    final empty = value == null || value.isEmpty;
+    final missing = empty && emptyIsMissing;
+    return Container(
+      constraints: const BoxConstraints(minHeight: 76),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: missing ? AppColors.warnBg : Colors.white,
+        border: first ? null : const Border(top: BorderSide(color: Color(0xFFE6E6E2), width: 1.5)),
+      ),
+      child: Row(
+        children: [
+          _iconCircle(icon),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.sub)),
+                Text(
+                  empty ? emptyText : value!,
+                  style: TextStyle(
+                    fontSize: empty && !missing ? 20 : 22,
+                    fontWeight: empty && !missing ? FontWeight.w500 : FontWeight.w800,
+                    color: missing
+                        ? AppColors.danger
+                        : (empty ? AppColors.disabledFg : AppColors.text),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          _editButton(empty ? '넣기' : '고치기', onEdit),
         ],
       ),
     );
@@ -554,42 +596,47 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
                 ? '${formatTime(_d.startMin!)} ~ ${formatTime(_d.endMin!)}'
                 : formatTime(_d.startMin!));
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        color: missing ? AppColors.warnBg : null,
-        border: const Border(bottom: BorderSide(color: Color(0xFFE6E6E2))),
+        color: missing ? AppColors.warnBg : Colors.white,
+        border: const Border(top: BorderSide(color: Color(0xFFE6E6E2), width: 1.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _tag('시간', AppColors.timeBg, AppColors.timeFg),
-                    const SizedBox(height: 4),
-                    Text(value,
-                        style: TextStyle(
-                          fontSize: 21,
-                          fontWeight: FontWeight.w700,
-                          color: missing ? AppColors.danger : AppColors.text,
-                        )),
-                  ],
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 56),
+            child: Row(
+              children: [
+                _iconCircle(Icons.schedule_rounded),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('시간',
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.sub)),
+                      Text(value,
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w800,
+                            color: missing ? AppColors.danger : AppColors.text,
+                          )),
+                    ],
+                  ),
                 ),
-              ),
-              if (!_showTimeChoices)
-                _changeButton(() => setState(() => _showTimeChoices = true)),
-            ],
+                const SizedBox(width: 8),
+                if (!missing) _editButton('고치기', _openTimeSheet),
+              ],
+            ),
           ),
+          // 시간을 못 들었으면 큰 버튼으로 바로 고르기 (와이어프레임 4차 "하나만 더")
           if (missing) ...[
             const SizedBox(height: 8),
-            const Text('시간을 못 들었어요. 아래에서 골라주세요.',
+            const Text('몇 시에 하세요? 아래에서 골라주세요.',
                 style: TextStyle(
-                    fontSize: 17, color: AppColors.danger, fontWeight: FontWeight.w500)),
-          ],
-          if (_showTimeChoices) ...[
+                    fontSize: 17, color: AppColors.danger, fontWeight: FontWeight.w700)),
             const SizedBox(height: 10),
             ChoiceGrid(
               options: _timeOptions,

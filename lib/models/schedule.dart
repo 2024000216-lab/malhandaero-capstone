@@ -193,8 +193,11 @@ class ScheduleDraft {
   bool allDay = false;
   String? location;
   String? memo;
-  int? alarmBefore = 10;
+  int? alarmBefore = defaultAlarmBefore;
   String? transcript;
+
+  /// 새 일정의 미리 알림 기본값 (설정 화면에서 바꾸면 AppSettings가 갱신)
+  static int defaultAlarmBefore = 10;
 
   // 반복: 기간(몇 달 동안)으로 고르면 repeatMonths, 날짜로 고르면 repeatUntilDate
   String? repeatRule;

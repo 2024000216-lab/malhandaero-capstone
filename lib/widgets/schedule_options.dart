@@ -35,7 +35,7 @@ class AlarmChoice extends StatelessWidget {
         if (label == _off) {
           draft.alarmBefore = null;
         } else if (label == _morning) {
-          draft.alarmBefore ??= 10;
+          draft.alarmBefore ??= ScheduleDraft.defaultAlarmBefore;
         } else {
           draft.alarmBefore = alarmChoices.firstWhere((m) => '${beforeLabel(m)} 전' == label);
         }

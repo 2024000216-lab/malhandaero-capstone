@@ -141,6 +141,18 @@ class ScheduleRepository {
     return rows.map(Schedule.fromMap).toList();
   }
 
+  /// [from] 날짜부터 앞으로의 일정 (날짜 → 하루 종일 → 시간 순)
+  Future<List<Schedule>> upcoming(DateTime from, {int limit = 30}) async {
+    final rows = await (await _database).query(
+      'schedules',
+      where: 'date >= ?',
+      whereArgs: [dateKey(from)],
+      orderBy: 'date ASC, all_day DESC, start_min ASC, id ASC',
+      limit: limit,
+    );
+    return rows.map(Schedule.fromMap).toList();
+  }
+
   /// { '2026-10-23': 2, ... }
   Future<Map<String, int>> countsBetween(DateTime from, DateTime to) async {
     final rows = await (await _database).rawQuery(

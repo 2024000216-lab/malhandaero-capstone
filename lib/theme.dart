@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'services/app_settings.dart';
+
 /// 와이어프레임 3차 색상 — 흰 배경 대비가 충분한 진한 색 위주
 class AppColors {
   static const primary = Color(0xFF2B4ACB);
@@ -26,6 +28,16 @@ class AppColors {
   static const placeFg = Color(0xFF1F7A45);
   static const titleBg = Color(0xFFFBEFD0);
   static const titleFg = Color(0xFF7A5000);
+
+  // 와이어프레임 5차 — 색약 모드 / 크게 보기 모드
+  static const primaryColorBlind = Color(0xFF1F4FD1);
+  static const ink = Color(0xFF111111);
+  static const grayBg = Color(0xFFF2F1ED);
+  static const iconBg = Color(0xFFE8ECFB);
+
+  /// 색약 모드 여부에 맞는 주요 색
+  static Color primaryOf(BuildContext context) =>
+      SettingsScope.of(context).colorBlind ? primaryColorBlind : primary;
 }
 
 ThemeData buildTheme() {
